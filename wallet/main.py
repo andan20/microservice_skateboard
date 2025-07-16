@@ -60,13 +60,15 @@ async def add_money(username: str, to_add: int, session: SessionDep):
         return
 
     user.balance += to_add
+    if user.is_ban and user.balance >= 0:
+        user.is_ban = False
     session.commit()
     session.refresh(user)
     return user
 
 
 @app.post("/deletemoney/{username}")
-async def add_money(username: str, to_delete: int, session: SessionDep):
+async def delete_money(username: str, to_delete: int, session: SessionDep):
     if to_delete < 0 or to_delete > 1e9:
         return
     username = username.lower()
