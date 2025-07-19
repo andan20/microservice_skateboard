@@ -30,10 +30,10 @@ async def new_rent(username: str, number: int, session: SessionDep):
     user_info = session.exec(select(Rent).where(Rent.username == username)).first()
     if user_info:
         return
-    is_ban = requests.get(f"http://localhost:8002/ban/{username}").json()
+    is_ban = requests.get(f"http://wallet:8002/ban/{username}").json()
     if is_ban:
         return
-    is_skate_free = requests.get(f"http://localhost:8001/is_free/{number}").json()
+    is_skate_free = requests.get(f"http://skateboards:8001/is_free/{number}").json()
     if not is_skate_free:
         return
 
@@ -42,9 +42,9 @@ async def new_rent(username: str, number: int, session: SessionDep):
     session.add(rent)
     session.commit()
 
-    requests.post(f"http://localhost:8001/add_rent/{number}")
+    requests.post(f"http://skateboards:8001/add_rent/{number}")
 
-    requests.post(f"http://localhost:8002/deletemoney/{username}?to_delete={100}")
+    requests.post(f"http://wallet:8002/deletemoney/{username}?to_delete={100}")
 
     session.refresh(rent)
     return rent
@@ -59,7 +59,7 @@ async def delete_rent(username: str, session: SessionDep):
     num = rent_info.number
     session.delete(rent_info)
 
-    requests.post(f"http://localhost:8001/delete_rent/{num}")
+    requests.post(f"http://skateboards:8001/delete_rent/{num}")
 
     session.commit()
     return {"message": "succes"}

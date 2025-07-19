@@ -6,8 +6,8 @@ import os
 from sqlalchemy.exc import OperationalError
 import time
 
-#engine = create_engine(os.environ["DATABASE_URL"])
-engine = create_engine('postgresql+psycopg2://postgres:postgres@localhost:5432/rent')
+engine = create_engine(os.environ["DATABASE_URL"])
+# engine = create_engine('postgresql+psycopg2://postgres:postgres@localhost:5432/rent')
 SQLModel.metadata.create_all(engine)
 
 

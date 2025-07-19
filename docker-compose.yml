@@ -1,0 +1,70 @@
+version: "3.6"
+
+services:
+    db:
+        image: postgres:latest
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+            - ./initdb:/docker-entrypoint-initdb.d
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+            - "5433:5432"
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+    wallet:
+        container_name: wallet
+        image: wallet
+        ports:
+            - "8002:8002"
+        environment:
+            DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/wallet
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:8002/health" ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+        depends_on:
+            db:
+                condition: service_healthy
+
+    skateboards:
+        container_name: skateboards
+        image: skateboards
+        ports:
+            - "8001:8001"
+        environment:
+            DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/skateboards
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:8001/health" ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+        depends_on:
+            db:
+                condition: service_healthy
+    rent:
+        container_name: rent
+        image: rent
+        ports:
+            - "8003:8003"
+        environment:
+            DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/rent
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:8003/health" ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+        depends_on:
+            db:
+                condition: service_healthy
+
+volumes:
+  postgres_data:

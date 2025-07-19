@@ -1,0 +1,3 @@
+CREATE DATABASE skateboards;
+CREATE DATABASE wallet;
+CREATE DATABASE rent;
