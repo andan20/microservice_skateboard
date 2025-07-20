@@ -13,13 +13,13 @@ def on_startup():
     wait_for_db()
 
 
-@app.get("/info_rent/{username}")
+@app.get("/info_rent/username/{username}")
 async def get_info(username: str, session: SessionDep):
     info = session.exec(select(Rent).where(Rent.username == username)).first()
     return info
 
 
-@app.get("/info_rent/{number}")
+@app.get("/info_rent/number/{number}")
 async def get_info(number: int, session: SessionDep):
     info = session.exec(select(Rent).where(Rent.number == number)).first()
     return info
